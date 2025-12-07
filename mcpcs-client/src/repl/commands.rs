@@ -35,10 +35,15 @@ pub async fn handle_list(manager: &ClientManager, parts: &[&str]) -> Result<()> 
                     eprintln!("{} {:?}", "Error listing tools:".red(), e);
                 }
             }
-            _ => println!("{}", "Unknown list command. Usage: /list mcp | /list tool".yellow()),
+            "resource" => {
+                if let Err(e) = manager.list_resources().await {
+                    eprintln!("{} {:?}", "Error listing resources:".red(), e);
+                }
+            }
+            _ => println!("{}", "Unknown list command. Usage: /list mcp | /list tool | /list resource".yellow()),
         }
     } else {
-        println!("{}", "Usage: /list mcp | /list tool".yellow());
+        println!("{}", "Usage: /list mcp | /list tool | /list resource".yellow());
     }
     Ok(())
 }
@@ -68,14 +73,50 @@ pub async fn handle_call(manager: &ClientManager, input: &str, parts: &[&str]) -
     Ok(())
 }
 
-pub async fn handle_info(manager: &ClientManager, parts: &[&str]) -> Result<()> {
-    if parts.len() >= 3 && parts[1] == "tool" {
-        let tool_name = parts[2];
-        if let Err(e) = manager.tool_info(tool_name).await {
-            eprintln!("{} {:?}", "Error getting tool info:".red(), e);
+pub async fn handle_read(manager: &ClientManager, parts: &[&str]) -> Result<()> {
+    if parts.len() >= 3 && parts[1] == "resource" {
+        let resource_uri = parts[2];
+        if let Err(e) = manager.read_resource(resource_uri).await {
+            eprintln!("{} {:?}", "Error reading resource:".red(), e);
         }
     } else {
-        println!("{}", "Usage: /info tool <tool_name>".yellow());
+        println!("{}", "Usage: /read resource <uri> | /read resource <server>/<uri>".yellow());
+    }
+    Ok(())
+}
+
+pub async fn handle_down(manager: &ClientManager, parts: &[&str]) -> Result<()> {
+    if parts.len() >= 4 && parts[1] == "resource" {
+        let resource_uri = parts[2];
+        let local_path = parts[3];
+        if let Err(e) = manager.download_resource(resource_uri, local_path).await {
+            eprintln!("{} {:?}", "Error downloading resource:".red(), e);
+        }
+    } else {
+        println!("{}", "Usage: /down resource <uri> <local_path> | /down resource <server>/<uri> <local_path>".yellow());
+    }
+    Ok(())
+}
+
+pub async fn handle_info(manager: &ClientManager, parts: &[&str]) -> Result<()> {
+    if parts.len() >= 3 {
+        match parts[1] {
+            "tool" => {
+                let tool_name = parts[2];
+                if let Err(e) = manager.tool_info(tool_name).await {
+                    eprintln!("{} {:?}", "Error getting tool info:".red(), e);
+                }
+            }
+            "resource" => {
+                let resource_uri = parts[2];
+                if let Err(e) = manager.resource_info(resource_uri).await {
+                    eprintln!("{} {:?}", "Error getting resource info:".red(), e);
+                }
+            }
+            _ => println!("{}", "Usage: /info tool <tool_name> | /info resource <uri>|<server>/<uri>".yellow()),
+        }
+    } else {
+        println!("{}", "Usage: /info tool <tool_name> | /info resource <uri>|<server>/<uri>".yellow());
     }
     Ok(())
 }

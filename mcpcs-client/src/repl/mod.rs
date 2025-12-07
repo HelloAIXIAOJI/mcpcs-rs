@@ -48,6 +48,8 @@ pub async fn run() -> Result<()> {
             "/reload" => commands::handle_reload(&mut manager).await?,
             "/list" => commands::handle_list(&manager, &parts).await?,
             "/call" => commands::handle_call(&manager, input, &parts).await?,
+            "/read" => commands::handle_read(&manager, &parts).await?,
+            "/down" => commands::handle_down(&manager, &parts).await?,
             "/info" => commands::handle_info(&manager, &parts).await?,
             "/newconfig" => commands::handle_newconfig(&parts),
             "/exit" | "/quit" => {

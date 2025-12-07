@@ -1,6 +1,7 @@
 mod server;
 mod ssh;
 mod repl;
+mod resources;
 
 use anyhow::Result;
 use rand::Rng;
