@@ -16,6 +16,19 @@ pub enum McpServerConfig {
         #[serde(skip_serializing_if = "Option::is_none")]
         headers: Option<HashMap<String, String>>,
     },
+    Http {
+        transport: HttpTransport,
+        url: String,
+        /// Bearer token for authentication  
+        #[serde(skip_serializing_if = "Option::is_none")]
+        auth_token: Option<String>,
+        /// Custom headers to include with requests
+        #[serde(skip_serializing_if = "Option::is_none")]
+        headers: Option<HashMap<String, String>>,
+        /// Allow stateless connections (default: true)
+        #[serde(skip_serializing_if = "Option::is_none")]
+        stateless: Option<bool>,
+    },
     ChildProcess {
         transport: ChildProcessTransport,
         command: String,
@@ -42,6 +55,12 @@ pub enum SseTransport {
 #[serde(rename_all = "kebab-case")]
 pub enum ChildProcessTransport {
     ChildProcess,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "kebab-case")]
+pub enum HttpTransport {
+    Http,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]

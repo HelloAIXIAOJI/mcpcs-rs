@@ -3,7 +3,7 @@ use anyhow::Result;
 use colored::Colorize;
 use rmcp::{
     service::{RunningService, ServiceExt},
-    transport::{ConfigureCommandExt, TokioChildProcess, SseClientTransport},
+    transport::{ConfigureCommandExt, TokioChildProcess, SseClientTransport, StreamableHttpClientTransport},
     RoleClient,
 };
 use std::sync::Arc;
@@ -159,6 +159,55 @@ impl ClientManager {
                     let client = ().serve(transport).await?;
                     Ok(client)
                 }
+            }
+            McpServerConfig::Http { url, auth_token, headers, stateless, .. } => {
+                use rmcp::transport::streamable_http_client::{StreamableHttpClientTransportConfig, StreamableHttpClientTransport};
+                
+                // 🚀 OpenAI方法：在reqwest客户端层面设置default headers
+                let mut client_builder = reqwest::Client::builder()
+                    .timeout(std::time::Duration::from_secs(30));
+                
+                // 如果有自定义headers，设置为default headers
+                if let Some(headers) = headers {
+                    let mut header_map = reqwest::header::HeaderMap::new();
+                    
+                    for (name, value) in headers {
+                        match (name.parse::<reqwest::header::HeaderName>(), 
+                               reqwest::header::HeaderValue::from_str(&value)) {
+                            (Ok(header_name), Ok(header_value)) => {
+                                header_map.insert(header_name, header_value);
+                                eprintln!("🔍 Added header: {} = {}", name, value);
+                            }
+                            _ => {
+                                eprintln!("⚠️ Invalid header: {} = {}", name, value);
+                            }
+                        }
+                    }
+                    
+                    if !header_map.is_empty() {
+                        client_builder = client_builder.default_headers(header_map);
+                    }
+                }
+                
+                let http_client = client_builder.build()
+                    .map_err(|e| anyhow::anyhow!("Failed to build HTTP client: {}", e))?;
+                
+                // 配置rmcp transport
+                let mut config = StreamableHttpClientTransportConfig {
+                    uri: url.clone().into(),
+                    allow_stateless: stateless.unwrap_or(true),
+                    ..Default::default()
+                };
+                
+                // 如果有auth_token，设置为Authorization header
+                if let Some(token) = auth_token {
+                    config.auth_header = Some(format!("Bearer {}", token));
+                }
+                
+                // 使用配置好headers的客户端
+                let transport = StreamableHttpClientTransport::with_client(http_client, config);
+                let client = ().serve(transport).await?;
+                Ok(client)
             }
         }
     }

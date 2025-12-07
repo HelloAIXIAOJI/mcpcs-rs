@@ -26,6 +26,15 @@ enum Commands {
         #[arg(short, long, default_value = "sse-server")]
         name: String,
     },
+    /// Connect to HTTP server
+    Http {
+        /// HTTP server URL
+        #[arg(short, long)]
+        url: String,
+        /// Server name for display
+        #[arg(short, long, default_value = "http-server")]
+        name: String,
+    },
 }
 
 #[tokio::main]
@@ -65,6 +74,38 @@ async fn main() -> Result<()> {
                 }
                 Err(e) => {
                     eprintln!("{} {}", "Failed to connect to SSE server:".red(), e);
+                    std::process::exit(1);
+                }
+            }
+        }
+        Commands::Http { url, name } => {
+            use crate::client::ClientManager;
+            use crate::config::McpServerConfig;
+            use colored::Colorize;
+
+            let mut manager = ClientManager::new();
+            
+            // Create HTTP config
+            let http_config = McpServerConfig::Http { 
+                transport: crate::config::HttpTransport::Http,
+                url: url.clone(),
+                auth_token: None,  // Can be extended to accept from CLI
+                headers: None,     // Can be extended to accept from CLI
+                stateless: None,   // Use default (true)
+            };
+            
+            println!("{} {}", "Connecting to HTTP server:".green(), url.cyan());
+            
+            match manager.connect(&http_config).await {
+                Ok(client) => {
+                    manager.clients.insert(name.clone(), std::sync::Arc::new(client));
+                    println!("{} {}", "Connected to HTTP server:".green(), name.cyan());
+                    
+                    // Start interactive mode with this HTTP connection
+                    repl::run_with_manager(manager).await
+                }
+                Err(e) => {
+                    eprintln!("{} {}", "Failed to connect to HTTP server:".red(), e);
                     std::process::exit(1);
                 }
             }

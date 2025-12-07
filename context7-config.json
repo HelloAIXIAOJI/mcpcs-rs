@@ -1,11 +1,12 @@
 {
   "mcpServers": {
-    "context7": {
-      "transport": "sse",
+    "context73": {
+      "transport": "http",
       "url": "https://mcp.context7.com/mcp",
       "headers": {
-        "CONTEXT7_API_KEY": "YOUR_API_KEY"
-      }
+        "CONTEXT7_API_KEY": "ctx7sk-84b64b8f-6d38-4428-9934-346ea2f41509"
+      },
+      "stateless": true
     }
   }
 }
