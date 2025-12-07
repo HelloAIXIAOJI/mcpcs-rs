@@ -11,8 +11,12 @@ anyhow = "1.0"
 dirs = "5.0"
 futures = "0.3"
 clap = { version = "4.4", features = ["derive"] }
-rmcp = { version = "0.9", features = ["client", "transport-child-process"] }
+rmcp = { version = "0.9", features = ["client", "transport-child-process", "transport-sse-client-reqwest"] }
 env_logger = "0.10"
 log = "0.4"
 colored = "2"
 base64 = "0.22"
+reqwest = { version = "0.12", features = ["json", "stream"] }
+thiserror = "1.0"
+http = "1.0"
+sse-stream = "0.2"

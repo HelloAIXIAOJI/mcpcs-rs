@@ -11,16 +11,27 @@ use crate::config::McpConfig;
 
 pub async fn run() -> Result<()> {
     let mut manager = ClientManager::new();
+    run_with_manager_internal(&mut manager, true).await
+}
+
+pub async fn run_with_manager(manager: ClientManager) -> Result<()> {
+    let mut manager = manager;
+    run_with_manager_internal(&mut manager, false).await
+}
+
+async fn run_with_manager_internal(manager: &mut ClientManager, load_config: bool) -> Result<()> {
 
     help::print_banner();
 
-    println!("{}", "Loading configuration...".dimmed());
-    match McpConfig::load() {
-        Ok(config) => {
-            manager.load_from_config(&config).await?;
-        }
-        Err(e) => {
-            eprintln!("{} {}", "Failed to load config:".red(), e);
+    if load_config {
+        println!("{}", "Loading configuration...".dimmed());
+        match McpConfig::load() {
+            Ok(config) => {
+                manager.load_from_config(&config).await?;
+            }
+            Err(e) => {
+                eprintln!("{} {}", "Failed to load config:".red(), e);
+            }
         }
     }
 
@@ -45,7 +56,7 @@ pub async fn run() -> Result<()> {
 
         let parts: Vec<&str> = input.split_whitespace().collect();
         match parts[0] {
-            "/reload" => commands::handle_reload(&mut manager).await?,
+            "/reload" => commands::handle_reload(manager).await?,
             "/list" => commands::handle_list(&manager, &parts).await?,
             "/call" => commands::handle_call(&manager, input, &parts).await?,
             "/read" => commands::handle_read(&manager, &parts).await?,

@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
-rmcp = { version = "0.9", features = ["server", "transport-io"] }
+rmcp = { version = "0.9", features = ["server", "transport-io", "transport-sse-server"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 anyhow = "1.0"
@@ -18,3 +18,10 @@ env_logger = "0.10"
 schemars = "1.0"
 russh = "0.50.0-beta.7"
 russh-keys = "0.50.0-beta.7"
+axum = "0.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors"] }
+hyper = "1.0"
+clap = { version = "4.4", features = ["derive"] }
+futures = "0.3"
+tokio-util = "0.7"

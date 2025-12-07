@@ -3,11 +3,45 @@ use std::collections::HashMap;
 use anyhow::Result;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct McpServerConfig {
-    pub command: String,
-    #[serde(default)]
-    pub args: Vec<String>,
-    pub env: Option<HashMap<String, String>>,
+#[serde(untagged)]
+pub enum McpServerConfig {
+    // New format with explicit transport
+    Sse {
+        transport: SseTransport,
+        url: String,
+        /// Bearer token for authentication
+        #[serde(skip_serializing_if = "Option::is_none")]
+        auth_token: Option<String>,
+        /// Custom headers to include with requests
+        #[serde(skip_serializing_if = "Option::is_none")]
+        headers: Option<HashMap<String, String>>,
+    },
+    ChildProcess {
+        transport: ChildProcessTransport,
+        command: String,
+        #[serde(default)]
+        args: Vec<String>,
+        env: Option<HashMap<String, String>>,
+    },
+    // Legacy format (backward compatibility) - no transport field
+    Legacy {
+        command: String,
+        #[serde(default)]
+        args: Vec<String>,
+        env: Option<HashMap<String, String>>,
+    },
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "kebab-case")]
+pub enum SseTransport {
+    Sse,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "kebab-case")]
+pub enum ChildProcessTransport {
+    ChildProcess,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]
