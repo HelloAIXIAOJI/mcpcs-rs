@@ -40,10 +40,15 @@ pub async fn handle_list(manager: &ClientManager, parts: &[&str]) -> Result<()> 
                     eprintln!("{} {:?}", "Error listing resources:".red(), e);
                 }
             }
-            _ => println!("{}", "Unknown list command. Usage: /list mcp | /list tool | /list resource".yellow()),
+            "prompt" => {
+                if let Err(e) = manager.list_prompts().await {
+                    eprintln!("{} {:?}", "Error listing prompts:".red(), e);
+                }
+            }
+            _ => println!("{}", "Unknown list command. Usage: /list mcp | /list tool | /list resource | /list prompt".yellow()),
         }
     } else {
-        println!("{}", "Usage: /list mcp | /list tool | /list resource".yellow());
+        println!("{}", "Usage: /list mcp | /list tool | /list resource | /list prompt".yellow());
     }
     Ok(())
 }
@@ -113,10 +118,16 @@ pub async fn handle_info(manager: &ClientManager, parts: &[&str]) -> Result<()> 
                     eprintln!("{} {:?}", "Error getting resource info:".red(), e);
                 }
             }
-            _ => println!("{}", "Usage: /info tool <tool_name> | /info resource <uri>|<server>/<uri>".yellow()),
+            "prompt" => {
+                let prompt_name = parts[2];
+                if let Err(e) = manager.prompt_info(prompt_name).await {
+                    eprintln!("{} {:?}", "Error getting prompt info:".red(), e);
+                }
+            }
+            _ => println!("{}", "Usage: /info tool <tool_name> | /info resource <uri>|<server>/<uri> | /info prompt <name>|<server>/<name>".yellow()),
         }
     } else {
-        println!("{}", "Usage: /info tool <tool_name> | /info resource <uri>|<server>/<uri>".yellow());
+        println!("{}", "Usage: /info tool <tool_name> | /info resource <uri>|<server>/<uri> | /info prompt <name>|<server>/<name>".yellow());
     }
     Ok(())
 }
@@ -131,6 +142,23 @@ pub fn handle_newconfig(parts: &[&str]) {
             Err(e) => eprintln!("{} {}", "Failed to create config:".red(), e),
         }
     }
+}
+
+pub async fn handle_use(manager: &ClientManager, parts: &[&str]) -> Result<()> {
+    if parts.len() >= 3 && parts[1] == "prompt" {
+        let prompt_name = parts[2];
+        let args = if parts.len() > 3 {
+            parts[3..].join(" ")
+        } else {
+            String::new()
+        };
+        if let Err(e) = manager.use_prompt(prompt_name, &args).await {
+            eprintln!("{} {:?}", "Error using prompt:".red(), e);
+        }
+    } else {
+        println!("{}", "Usage: /use prompt <name> [key=value...]".yellow());
+    }
+    Ok(())
 }
 
 pub fn handle_unknown(cmd: &str) {

@@ -2,6 +2,7 @@ mod server;
 mod ssh;
 mod repl;
 mod resources;
+mod prompts;
 
 use anyhow::Result;
 use rand::Rng;

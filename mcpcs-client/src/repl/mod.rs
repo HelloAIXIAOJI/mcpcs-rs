@@ -51,6 +51,7 @@ pub async fn run() -> Result<()> {
             "/read" => commands::handle_read(&manager, &parts).await?,
             "/down" => commands::handle_down(&manager, &parts).await?,
             "/info" => commands::handle_info(&manager, &parts).await?,
+            "/use" => commands::handle_use(&manager, &parts).await?,
             "/newconfig" => commands::handle_newconfig(&parts),
             "/exit" | "/quit" => {
                 println!("{}", "Goodbye!".cyan());

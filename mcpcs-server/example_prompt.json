@@ -1,0 +1,200 @@
+{
+  "prompts": [
+    {
+      "name": "code_review",
+      "title": "AI代码审查助手",
+      "description": "分析代码质量并提供专业的改进建议",
+      "arguments": [
+        {
+          "name": "code",
+          "description": "要审查的代码片段",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "language",
+          "description": "编程语言(如: Python, Rust, JavaScript)",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "focus",
+          "description": "审查重点(如: security, performance, readability)",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "template": "请作为资深{{language}}开发工程师，审查以下代码并提供改进建议：\n\n```{{language}}\n{{code}}\n```\n\n审查重点：{{focus}}\n\n请从以下方面进行分析：\n- **代码质量**: 可读性、maintainability\n- **性能优化**: 算法效率、资源使用\n- **最佳实践**: 编码规范、设计模式\n- **安全性**: 潜在的安全风险\n- **错误处理**: 异常情况的处理\n\n请提供具体的修改建议和解释说明。"
+    },
+    {
+      "name": "explain_code",
+      "title": "代码解释专家",
+      "description": "详细解释代码的工作原理和逻辑流程",
+      "arguments": [
+        {
+          "name": "code",
+          "description": "需要解释的代码",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "level",
+          "description": "解释深度: beginner, intermediate, advanced",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "template": "请详细解释以下代码的工作原理(面向{{level}}级别)：\n\n```\n{{code}}\n```\n\n请按照以下结构进行解释：\n\n## 代码概述\n简要说明这段代码的主要功能\n\n## 逐行分析\n详细解释每一行或代码块的作用\n\n## 执行流程\n描述代码的执行顺序和逻辑流向\n\n## 关键概念\n解释涉及的重要编程概念或设计模式\n\n## 使用场景\n说明这种代码结构的适用场景"
+    },
+    {
+      "name": "summarize",
+      "title": "智能文档摘要器",
+      "description": "生成文本内容的结构化摘要",
+      "arguments": [
+        {
+          "name": "content",
+          "description": "要摘要的文档内容",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "style",
+          "description": "摘要风格: executive(高管), technical(技术), bullet(要点)",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "length",
+          "description": "摘要长度: short, medium, detailed",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "template": "请创建以下内容的{{style}}风格摘要({{length}}版本)：\n\n---\n{{content}}\n---\n\n摘要要求：\n- 准确提取核心信息\n- 保持逻辑结构清晰\n- 使用适当的专业术语\n- 突出重点和关键结论\n\n请按以下格式输出：\n\n## 核心要点\n[关键信息概括]\n\n## 主要内容\n[详细内容总结]\n\n## 重要结论\n[关键结论和影响]"
+    },
+    {
+      "name": "translate",
+      "title": "专业翻译助手",
+      "description": "在不同语言之间进行高质量翻译",
+      "arguments": [
+        {
+          "name": "text",
+          "description": "要翻译的文本内容",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "from",
+          "description": "源语言(如: zh-CN, en-US, ja-JP)",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "to",
+          "description": "目标语言(如: zh-CN, en-US, ja-JP)",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "domain",
+          "description": "领域类型: general, technical, business, academic",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "template": "请将以下{{domain}}领域的{{from}}文本翻译为{{to}}：\n\n**原文：**\n{{text}}\n\n**翻译要求：**\n- 保持原意的准确性\n- 使用地道的目标语言表达\n- 保持专业术语的一致性\n- 适应目标语言的表达习惯\n- 保留原文的语气和风格\n\n**翻译结果：**\n[在此提供翻译]"
+    },
+    {
+      "name": "debug_helper",
+      "title": "调试问题分析师",
+      "description": "帮助分析和解决代码中的错误和问题",
+      "arguments": [
+        {
+          "name": "error",
+          "description": "错误信息或异常内容",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "code",
+          "description": "相关的代码片段",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "context",
+          "description": "错误发生的上下文环境",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "template": "请帮助分析以下编程问题：\n\n**错误信息：**\n{{error}}\n\n**相关代码：**\n```\n{{code}}\n```\n\n**运行环境：**\n{{context}}\n\n请按以下步骤进行分析：\n\n## 1. 错误诊断\n分析错误的根本原因\n\n## 2. 问题定位\n指出具体的问题所在\n\n## 3. 解决方案\n提供详细的修复步骤\n\n## 4. 预防措施\n建议如何避免类似问题\n\n## 5. 最佳实践\n相关的编程最佳实践建议"
+    },
+    {
+      "name": "api_design",
+      "title": "API设计顾问",
+      "description": "设计RESTful API和接口规范",
+      "arguments": [
+        {
+          "name": "purpose",
+          "description": "API的主要功能和目标",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "resources",
+          "description": "涉及的主要资源类型",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "style",
+          "description": "API风格: REST, GraphQL, gRPC",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "template": "请设计一个{{style}}风格的API来满足以下需求：\n\n**功能目标：**\n{{purpose}}\n\n**涉及资源：**\n{{resources}}\n\n请提供完整的API设计方案：\n\n## 1. API概述\n- 功能描述\n- 设计原则\n- 技术选型\n\n## 2. 接口规范\n- 端点定义\n- HTTP方法\n- 请求/响应格式\n- 状态码设计\n\n## 3. 数据模型\n- 资源模型定义\n- 字段说明\n- 关系设计\n\n## 4. 安全考虑\n- 认证授权\n- 数据验证\n- 错误处理\n\n## 5. 文档示例\n- 请求示例\n- 响应示例\n- 错误示例"
+    },
+    {
+      "name": "test_plan",
+      "title": "测试计划制定专家",
+      "description": "为软件功能制定全面的测试计划",
+      "arguments": [
+        {
+          "name": "feature",
+          "description": "要测试的功能或模块描述",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "scope",
+          "description": "测试范围: unit, integration, e2e, all",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "template": "请为以下功能制定{{scope}}级别的测试计划：\n\n**功能描述：**\n{{feature}}\n\n请提供详细的测试计划：\n\n## 1. 测试目标\n- 测试范围界定\n- 质量目标设定\n- 风险评估\n\n## 2. 测试策略\n- 测试类型选择\n- 测试方法论\n- 工具和框架\n\n## 3. 测试用例设计\n- 正常流程测试\n- 异常情况测试\n- 边界条件测试\n- 性能测试点\n\n## 4. 测试数据准备\n- 测试数据要求\n- 数据准备方法\n- 环境配置\n\n## 5. 执行计划\n- 测试执行步骤\n- 验收标准\n- 缺陷处理流程"
+    },
+    {
+      "name": "refactor_guide",
+      "title": "代码重构指导师",
+      "description": "提供代码重构的具体建议和步骤",
+      "arguments": [
+        {
+          "name": "code",
+          "description": "需要重构的代码",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "goal",
+          "description": "重构目标: readability, performance, maintainability, extensibility",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "template": "请为以下代码提供{{goal}}方面的重构指导：\n\n**原始代码：**\n```\n{{code}}\n```\n\n**重构分析报告：**\n\n## 1. 当前问题分析\n- 代码异味识别\n- 结构问题分析\n- 性能瓶颈定位\n\n## 2. 重构策略\n- 重构优先级\n- 风险评估\n- 分步实施计划\n\n## 3. 具体重构建议\n- 函数分解\n- 类设计优化\n- 设计模式应用\n- 命名改进\n\n## 4. 重构后代码示例\n```\n[重构后的代码]\n```\n\n## 5. 测试验证\n- 回归测试要点\n- 性能对比\n- 代码质量度量"
+    }
+  ]
+}

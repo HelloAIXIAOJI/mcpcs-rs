@@ -80,6 +80,7 @@ impl ServerHandler for McpServer {
             capabilities: ServerCapabilities::builder()
                 .enable_tools()
                 .enable_resources()
+                .enable_prompts()
                 .build(),
             server_info: Implementation {
                 name: "mcpcs-server".to_string(),
@@ -192,6 +193,65 @@ impl ServerHandler for McpServer {
             )),
             Err(e) => Err(McpError::internal_error(
                 format!("Error accessing resource: {}", e),
+                None,
+            )),
+        }
+    }
+
+    async fn list_prompts(
+        &self,
+        _request: Option<PaginatedRequestParam>,
+        _context: RequestContext<RoleServer>,
+    ) -> Result<ListPromptsResult, McpError> {
+        let prompts = match self.state.prompts.list_prompts() {
+            Ok(entries) => entries,
+            Err(e) => {
+                eprintln!("Error loading prompts: {}", e);
+                vec![]
+            }
+        };
+
+        let mcp_prompts = prompts.into_iter().map(|entry| Prompt {
+            name: entry.name,
+            title: entry.title,
+            description: entry.description,
+            arguments: Some(entry.arguments.into_iter().map(|arg| PromptArgument {
+                name: arg.name,
+                title: None,
+                description: arg.description,
+                required: Some(arg.required),
+            }).collect()),
+            icons: None,
+        }).collect();
+
+        Ok(ListPromptsResult {
+            prompts: mcp_prompts,
+            next_cursor: None,
+        })
+    }
+
+    async fn get_prompt(
+        &self,
+        request: GetPromptRequestParam,
+        _context: RequestContext<RoleServer>,
+    ) -> Result<GetPromptResult, McpError> {
+        // 转换 serde_json::Map 到 HashMap
+        let args = request.arguments.unwrap_or_default()
+            .into_iter()
+            .filter_map(|(k, v)| v.as_str().map(|s| (k, s.to_string())))
+            .collect();
+        
+        match self.state.prompts.render_prompt(&request.name, &args) {
+            Ok(rendered_text) => {
+                let message = PromptMessage::new_text(PromptMessageRole::User, rendered_text);
+
+                Ok(GetPromptResult {
+                    description: Some(format!("Generated prompt: {}", request.name)),
+                    messages: vec![message],
+                })
+            }
+            Err(e) => Err(McpError::invalid_params(
+                format!("Error rendering prompt '{}': {}", request.name, e),
                 None,
             )),
         }

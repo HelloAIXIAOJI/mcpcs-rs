@@ -1,12 +1,14 @@
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use crate::resources::ResourceManager;
+use crate::prompts::PromptManager;
 
 #[derive(Clone)]
 pub struct ServerState {
     pub ssh_port: u16,
     pub say_content: Arc<RwLock<String>>,
     pub resources: Arc<ResourceManager>,
+    pub prompts: Arc<PromptManager>,
 }
 
 impl ServerState {
@@ -15,6 +17,7 @@ impl ServerState {
             ssh_port,
             say_content: Arc::new(RwLock::new(String::new())),
             resources: Arc::new(ResourceManager::new()),
+            prompts: Arc::new(PromptManager::new()),
         }
     }
 
